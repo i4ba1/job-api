@@ -1,44 +1,102 @@
 package id.mni.job.controllers;
 
-import id.mni.job.models.dto.ResponseDto;
-import id.mni.job.models.dto.UserDto;
+import id.mni.job.models.ERole;
+import id.mni.job.models.Role;
+import id.mni.job.models.User;
+import id.mni.job.models.dto.*;
+import id.mni.job.repository.InterfaceRoleRepository;
 import id.mni.job.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
+
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
+    private final PasswordEncoder encoder;
+    private final InterfaceRoleRepository roleRepository;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, PasswordEncoder encoder, InterfaceRoleRepository roleRepository) {
         this.userService = userService;
+        this.encoder = encoder;
+        this.roleRepository = roleRepository;
     }
 
     @PostMapping("/createNewUser")
     public ResponseEntity<String> createNewUser(@RequestBody UserDto userDto){
-        int newUser = userService.createNewUser(userDto);
+        User newUser = new User(userDto.getUsername(), userDto.getPassword(), userDto.getRole());
+        int result = userService.createNewUser(newUser);
         ResponseDto responseDto = new ResponseDto();
-        if (newUser == -1) {
+        if (result == -1) {
             return new ResponseEntity<>("Username can not be blank", HttpStatus.BAD_REQUEST);
-        }else if (newUser == -2) {
+        }else if (result == -2) {
             return new ResponseEntity<>("Password can not be blank", HttpStatus.BAD_REQUEST);
-        }else if (newUser == -3) {
+        }else if (result == -3) {
             return new ResponseEntity<>("Username already taken", HttpStatus.BAD_REQUEST);
-        }else if (newUser == -4) {
+        }else if (result == -4) {
             return new ResponseEntity<>("Problem when insert new user", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity<>("Successfully create new user", HttpStatus.OK);
     }
 
-    @PostMapping("login")
-    public ResponseEntity<?> login(){
-        return null;
+    @PostMapping("/signIn")
+    public ResponseEntity<?> login(@Valid @RequestBody LoginDto loginRequest){
+        ResponseEntity<JwtResponse> login = userService.login(loginRequest);
+        return login;
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserDto signUpRequest) {
+        if (userService.isUsernameExist(signUpRequest.getUsername())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponseDto("Error: Username is already taken!"));
+        }
+
+        // Create new user's account
+        User user = new User(signUpRequest.getUsername(),
+                encoder.encode(signUpRequest.getPassword()));
+
+        Set<Role> strRoles = signUpRequest.getRole();
+        Set<Role> roles = new HashSet<>();
+
+        if (strRoles == null) {
+            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(userRole);
+        } else {
+            for (Role role : strRoles) {
+                if ("admin".equals(role)) {
+                    Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(adminRole);
+                } else if ("mod".equals(role)) {
+                    Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(modRole);
+                } else {
+                    Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(userRole);
+                }
+            }
+        }
+
+        user.setRoles(roles);
+        userService.createNewUser(user);
+
+        return ResponseEntity.ok(new MessageResponseDto("User registered successfully!"));
     }
 }

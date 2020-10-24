@@ -10,4 +10,5 @@ public interface InterfaceJob {
     List<JobDto> getListOfJob();
     Job createNewJob(Job job);
     int isJobExist(UUID id);
+    Job getJobById(UUID id);
 }

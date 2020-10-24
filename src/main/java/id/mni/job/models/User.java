@@ -38,4 +38,12 @@ public class User {
 
     public User(String username, String password, Timestamp from, Timestamp from1) {
     }
+
+    public User(String username, String encode) {
+
+    }
+
+    public User(String username, String encode, Set<Role> roles) {
+
+    }
 }

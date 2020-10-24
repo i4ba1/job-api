@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -45,5 +46,11 @@ public class JobService implements InterfaceJob {
     @Override
     public int isJobExist(UUID id) {
         return jobRepository.findById(id).isPresent()?1:0;
+    }
+
+    @Override
+    public Job getJobById(UUID id) {
+        Optional<Job> optional = jobRepository.findById(id);
+        return optional.isPresent()?optional.get():null;
     }
 }

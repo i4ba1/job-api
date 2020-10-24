@@ -45,10 +45,13 @@ public class UserDetailsImpl implements UserDetails {
                 authorities);
     }
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
+    }
+
+    public BigInteger getId(){
+        return id;
     }
 
     @Override
