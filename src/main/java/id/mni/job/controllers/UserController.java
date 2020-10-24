@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,7 +36,8 @@ public class UserController {
 
     @PostMapping("/createNewUser")
     public ResponseEntity<String> createNewUser(@RequestBody UserDto userDto){
-        User newUser = new User(userDto.getUsername(), userDto.getPassword(), userDto.getRole());
+        //User newUser = new User(userDto.getUsername(), userDto.getPassword(), new HashSet<String>().add("user"), Timestamp.from(Instant.now()),  Timestamp.from(Instant.now()));
+        User newUser = new User();
         int result = userService.createNewUser(newUser);
         ResponseDto responseDto = new ResponseDto();
         if (result == -1) {
@@ -66,10 +68,13 @@ public class UserController {
         }
 
         // Create new user's account
-        User user = new User(signUpRequest.getUsername(),
-                encoder.encode(signUpRequest.getPassword()));
+        User user = new User();
+        user.setUsername(signUpRequest.getUsername());
+        user.setPassword(encoder.encode(signUpRequest.getPassword()));
+        user.setCreatedAt(Timestamp.from(Instant.now()));
+        user.setUpdatedAt(Timestamp.from(Instant.now()));
 
-        Set<Role> strRoles = signUpRequest.getRole();
+        Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
 
         if (strRoles == null) {
@@ -77,7 +82,7 @@ public class UserController {
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
         } else {
-            for (Role role : strRoles) {
+            for (String role : strRoles) {
                 if ("admin".equals(role)) {
                     Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));

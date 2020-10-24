@@ -1,5 +1,6 @@
 package id.mni.job.models.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import id.mni.job.models.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,8 +11,9 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonDeserialize(as = UserDto.class)
 public class UserDto {
     private String username;
     private String password;
-    private Set<Role> role;
+    private Set<String> role;
 }

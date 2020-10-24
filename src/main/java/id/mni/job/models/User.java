@@ -16,6 +16,7 @@ import java.util.Set;
 @Table(name = "tbl_user")
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private BigInteger id;
 
     @Column(name="username", columnDefinition = "varchar(100)", nullable = false)
@@ -35,15 +36,4 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
-
-    public User(String username, String password, Timestamp from, Timestamp from1) {
-    }
-
-    public User(String username, String encode) {
-
-    }
-
-    public User(String username, String encode, Set<Role> roles) {
-
-    }
 }

@@ -42,8 +42,7 @@ public class UserService implements InterfaceUser {
             return -3;
         }
 
-        User newUser = new User(user.getUsername(), user.getPassword(), Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
-        User result = userRepository.save(newUser);
+        User result = userRepository.save(user);
         if (!result.equals(null)){
             return 0;
         }
