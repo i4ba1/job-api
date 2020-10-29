@@ -7,17 +7,28 @@
 - Open new tab in terminal
 -./mvnw spring-boot:run
 
-User Rest API
+## Koneksikan ke PgAdmin dengan cara:
+- server: localhost
+- port: 5441
+- username: mni
+- pass: mni123!#
+
+Kemudian lakukan insert query ke table role:
+INSERT INTO tbl_role(id, name) VALUES(1,'ROLE_USER');
+INSERT INTO tbl_role(id,name) VALUES(2,'ROLE_MODERATOR');
+INSERT INTO tbl_role(id,name) VALUES(3,'ROLE_ADMIN');
+
+## User Rest API
 - /api/user/signup
 
-###Request:
+### Request:
 {
 	"username": "admin",
 	"password": "admin123!#",
 	"role": ["admin"]
 }
 
-###Response:
+### Response:
 {
     "message": "User registered successfully!"
 }
@@ -28,6 +39,8 @@ User Rest API
 	"username": "admin",
 	"password": "admin123!#"
 }
+
+
 
 ### Response:
 {
@@ -41,7 +54,7 @@ User Rest API
 }
 
 
-Job Rest API
+## Job Rest API
 - /api/job/getJobs
-###Response:
+### Response:
 
