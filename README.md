@@ -23,13 +23,13 @@ User Rest API
 }
 
 - /api/user/signIn
-###Request:
+### Request:
 {
 	"username": "admin",
 	"password": "admin123!#"
 }
 
-###Response:
+### Response:
 {
     "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTYwMzk0NDg4MSwiZXhwIjoxNjA0MDMxMjgxfQ.puHlQZ8Aam2qf6MPF7VgWFwW9PNBYAAmh9dxZ-9RzsQYJLisrUpsXZoTIO453JIh9F9RYMUpcqBr6FsPoWmtFQ",
     "type": "Bearer",
