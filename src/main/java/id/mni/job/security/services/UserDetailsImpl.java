@@ -2,6 +2,8 @@ package id.mni.job.security.services;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import id.mni.job.models.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +27,8 @@ public class UserDetailsImpl implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
+    private static final Logger log = LoggerFactory.getLogger(UserDetailsImpl.class);
+
     public UserDetailsImpl(BigInteger id, String username, String password,
                            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
@@ -38,6 +42,7 @@ public class UserDetailsImpl implements UserDetails {
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());
 
+        log.info("authorities: "+authorities.toString());
         return new UserDetailsImpl(
                 user.getId(),
                 user.getUsername(),

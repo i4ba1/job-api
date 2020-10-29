@@ -68,7 +68,7 @@ public class JobController {
     }
 
     @GetMapping("/positions/{id}.json")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Job> getPosition(@PathVariable UUID id){
         log.info("id -> "+ id);
         Job jobById = jobService.getJobById(id);
